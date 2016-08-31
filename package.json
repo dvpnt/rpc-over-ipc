@@ -1,0 +1,39 @@
+{
+  "name": "rpc-over-ipc",
+  "version": "0.0.1",
+  "description": "Lightweight RPC over IPC for node.js",
+  "main": "index.js",
+  "author": "Aleksey Timchenko",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint ./",
+    "test": "mocha test/ --reporter spec --bail",
+    "coverage": "nyc npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dvpnt/rpc-over-ipc.git"
+  },
+  "keywords": [
+    "ipc",
+    "rpc"
+  ],
+  "devDependencies": {
+    "eslint": "3.4.0",
+    "eslint-config-dvpnt": "1.1.0",
+    "expect.js": "0.3.1",
+    "mocha": "3.0.2",
+    "nyc": "8.1.0",
+    "twostep": "0.4.2"
+  },
+  "nyc": {
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "test/**"
+    ]
+  }
+}
