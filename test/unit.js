@@ -45,16 +45,15 @@ describe('unit', function() {
 
 		it('register and init', function() {
 			rpc.register(mocks.proc, 'add', testUtils.add);
-			expect(mocks.proc).to.have.property('$rpc');
-			expect(mocks.proc).to.be.an('object');
-			expect(mocks.proc.$rpc).to.have.property('add');
-			expect(mocks.proc.$rpc.add).to.be.an('function');
+			expect(mocks.proc).to.have.property('_rpc');
+			expect(mocks.proc._rpc).to.be.an('object');
+			expect(mocks.proc._rpc.funcs.add).to.be.an('function');
 		});
 
 		it('just register', function() {
 			rpc.register(mocks.proc, 'mul', testUtils.mul);
-			expect(mocks.proc.$rpc).to.have.property('mul');
-			expect(mocks.proc.$rpc.add).to.be.an('function');
+			expect(mocks.proc._rpc.funcs).to.have.property('mul');
+			expect(mocks.proc._rpc.funcs.mul).to.be.an('function');
 		});
 
 		it('register with same name', function() {
@@ -178,7 +177,6 @@ describe('unit', function() {
 						expected.push(i);
 					}
 					expect(results).to.eql(expected);
-					expect(mocks.child.listenerCount('message')).to.eql(1);
 					this.pass(null);
 				},
 				done
