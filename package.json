@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint ./",
-    "test": "mocha test/ --reporter spec --bail",
+    "test": "mocha test/unit.js test/integration.js --reporter spec --bail",
     "coverage": "nyc npm run test"
   },
   "repository": {

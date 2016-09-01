@@ -43,20 +43,20 @@ describe('unit', function() {
 	describe('register', function() {
 		var mocks = testUtils.getMocks();
 
-		it('register and init', function() {
+		it('first call', function() {
 			rpc.register(mocks.proc, 'add', testUtils.add);
 			expect(mocks.proc).to.have.property('_rpc');
 			expect(mocks.proc._rpc).to.be.an('object');
 			expect(mocks.proc._rpc.funcs.add).to.be.an('function');
 		});
 
-		it('just register', function() {
+		it('second call', function() {
 			rpc.register(mocks.proc, 'mul', testUtils.mul);
 			expect(mocks.proc._rpc.funcs).to.have.property('mul');
 			expect(mocks.proc._rpc.funcs.mul).to.be.an('function');
 		});
 
-		it('register with same name', function() {
+		it('with same name', function() {
 			expect(function() {
 				rpc.register(mocks.proc, 'add', testUtils.add);
 			}).to.throwError('function `add` already registered');
@@ -76,6 +76,13 @@ describe('unit', function() {
 			});
 		});
 
+		it('first call', function() {
+			var proc = new testUtils.MockProcess();
+			rpc.call(proc, 'noop', function() {});
+			expect(proc).to.have.property('_rpc');
+			expect(proc._rpc).to.be.an('object');
+		});
+
 		it('unregistered function', function(done) {
 			rpc.call(mocks.child, 'noop', function(err) {
 				expect(err.message).to.eql('unknown function `noop`');
@@ -84,8 +91,8 @@ describe('unit', function() {
 		});
 
 		it('error function', function(done) {
-			rpc.call(mocks.child, 'error', new Error('foo error'), function(err) {
-				expect(err.message).to.eql('foo error');
+			rpc.call(mocks.child, 'error', function(err) {
+				expect(err.message).to.eql('error');
 				done();
 			});
 		});

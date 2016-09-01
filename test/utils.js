@@ -6,6 +6,8 @@ var EventEmitter = require('events'),
 var MockProcess = function() {};
 inherits(MockProcess, EventEmitter);
 
+MockProcess.prototype.send = function() {};
+
 exports.MockProcess = MockProcess;
 
 exports.getMocks = function() {
@@ -50,8 +52,8 @@ exports.identity = function(a, callback) {
 	});
 };
 
-exports.error = function(error, callback) {
+exports.error = function(callback) {
 	process.nextTick(function() {
-		callback(error);
+		callback(new Error('error'));
 	});
 };
