@@ -41,30 +41,33 @@ describe('unit', function() {
 	});
 
 	describe('register', function() {
-		var mocks = testUtils.getMocks();
+		var proc = new testUtils.MockProcess();
 
 		it('first call', function() {
-			rpc.register(mocks.proc, 'add', testUtils.add);
-			expect(mocks.proc).to.have.property('_rpc');
-			expect(mocks.proc._rpc).to.be.an('object');
-			expect(mocks.proc._rpc.funcs.add).to.be.an('function');
+			rpc.register(proc, 'add', testUtils.add);
+			expect(proc).to.have.property('_rpc');
+			expect(proc._rpc).to.be.an('object');
+			expect(proc._rpc.funcs.add).to.be.an('function');
+			expect(proc.listenerCount('message')).to.eql(1);
 		});
 
 		it('second call', function() {
-			rpc.register(mocks.proc, 'mul', testUtils.mul);
-			expect(mocks.proc._rpc.funcs).to.have.property('mul');
-			expect(mocks.proc._rpc.funcs.mul).to.be.an('function');
+			rpc.register(proc, 'mul', testUtils.mul);
+			expect(proc._rpc.funcs).to.have.property('mul');
+			expect(proc._rpc.funcs.mul).to.be.an('function');
+			expect(proc.listenerCount('message')).to.eql(1);
 		});
 
 		it('with same name', function() {
 			expect(function() {
-				rpc.register(mocks.proc, 'add', testUtils.add);
+				rpc.register(proc, 'add', testUtils.add);
 			}).to.throwError('function `add` already registered');
 		});
 	});
 
 	describe('call', function() {
-		var mocks = testUtils.getMocks();
+		var mocks = testUtils.getMocks(),
+			proc = new testUtils.MockProcess();
 
 		before(function() {
 			[mocks.proc, mocks.child].forEach(function(proc) {
@@ -77,10 +80,15 @@ describe('unit', function() {
 		});
 
 		it('first call', function() {
-			var proc = new testUtils.MockProcess();
 			rpc.call(proc, 'noop', function() {});
 			expect(proc).to.have.property('_rpc');
 			expect(proc._rpc).to.be.an('object');
+			expect(proc.listenerCount('message')).to.eql(1);
+		});
+
+		it('second call', function() {
+			rpc.call(proc, 'noop', function() {});
+			expect(proc.listenerCount('message')).to.eql(1);
 		});
 
 		it('unregistered function', function(done) {
@@ -93,6 +101,7 @@ describe('unit', function() {
 		it('error function', function(done) {
 			rpc.call(mocks.child, 'error', function(err) {
 				expect(err.message).to.eql('error');
+				expect(mocks.child._rpc.results).to.be.empty();
 				done();
 			});
 		});
@@ -101,6 +110,7 @@ describe('unit', function() {
 			rpc.call(mocks.child, 'ten', function(err, result) {
 				expect(err).not.be.ok();
 				expect(result).to.eql(10);
+				expect(mocks.child._rpc.results).to.be.empty();
 				done();
 			});
 		});
@@ -109,6 +119,7 @@ describe('unit', function() {
 			rpc.call(mocks.child, 'identity', 'foo', function(err, result) {
 				expect(err).not.be.ok();
 				expect(result).to.eql('foo');
+				expect(mocks.child._rpc.results).to.be.empty();
 				done();
 			});
 		});
@@ -117,6 +128,7 @@ describe('unit', function() {
 			rpc.call(mocks.child, 'add', [1, 2], function(err, result) {
 				expect(err).not.be.ok();
 				expect(result).to.eql(3);
+				expect(mocks.child._rpc.results).to.be.empty();
 				done();
 			});
 		});
@@ -132,6 +144,7 @@ describe('unit', function() {
 					expect(result0).to.eql(3);
 					expect(result1).to.eql(5);
 					expect(result2).to.eql(9);
+					expect(mocks.child._rpc.results).to.be.empty();
 					this.pass(null);
 				},
 				done
@@ -149,6 +162,7 @@ describe('unit', function() {
 					expect(result0).to.eql(3);
 					expect(result1).to.eql(6);
 					expect(result2).to.eql('bar');
+					expect(mocks.child._rpc.results).to.be.empty();
 					this.pass(null);
 				},
 				done
@@ -164,6 +178,7 @@ describe('unit', function() {
 				function(err, result0, result1) {
 					expect(result0).to.eql(3);
 					expect(result1).to.eql(5);
+					expect(mocks.child._rpc.results).to.be.empty();
 					this.pass(null);
 				},
 				done
@@ -171,19 +186,19 @@ describe('unit', function() {
 		});
 
 		it('many parallel functions', function(done) {
+			var expected = [];
+
 			Steppy(
 				function() {
 					var group = this.makeGroup();
 					for (var i = 0; i < 1000; i++) {
 						rpc.call(mocks.child, 'identity', i, group.slot());
+						expected.push(i);
 					}
 				},
 				function(err, results) {
-					var expected = [];
-					for (var i = 0; i < 1000; i++) {
-						expected.push(i);
-					}
 					expect(results).to.eql(expected);
+					expect(mocks.child._rpc.results).to.be.empty();
 					this.pass(null);
 				},
 				done
