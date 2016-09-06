@@ -1,6 +1,7 @@
 # rpc-over-ipc
 [![Build Status](https://api.travis-ci.org/dvpnt/rpc-over-ipc.svg)](https://travis-ci.org/dvpnt/rpc-over-ipc)
 [![Coverage Status](https://coveralls.io/repos/github/dvpnt/rpc-over-ipc/badge.svg?branch=master)](https://coveralls.io/github/dvpnt/rpc-over-ipc?branch=master)
+[![NPM Version](https://img.shields.io/npm/v/rpc-over-ipc.svg)](https://www.npmjs.com/package/rpc-over-ipc)
 
 Lightweight RPC over IPC for node.js
 
