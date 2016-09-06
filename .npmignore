@@ -6,3 +6,4 @@ coverage/
 .eslintignore
 .npmignore
 .gitignore
+.travis.yml
