@@ -19,6 +19,7 @@
     "rpc"
   ],
   "devDependencies": {
+    "coveralls": "2.11.12",
     "eslint": "3.4.0",
     "eslint-config-dvpnt": "1.1.0",
     "expect.js": "0.3.1",
